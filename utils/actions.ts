@@ -134,7 +134,7 @@ export const updateProfileImageAction = async (
   try {
     const image = formData.get('image') as File;
     const validatedFields = validateWithZodSchema(imageSchema, { image });
-    const fullPath = await uploadImage(validatedFields.image);
+    const fullPath = await uploadImage(validatedFields.image as unknown as File);
     await db.profile.update({
       where: {
         clerkId: user.id
