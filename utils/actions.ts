@@ -30,7 +30,9 @@ export const createProfileAction = async (prevState: any, formData: FormData) =>
         clerkId: user.id,
         email: user.emailAddresses[0].emailAddress,
         profileImage: user.imageUrl ?? '',
-        ...validatedFields
+        firstName: validatedFields.firstName,
+        lastName: validatedFields.lastName,
+        username: validatedFields.username
       }
     })
     await clerkClient.users.updateUserMetadata(user.id, {
@@ -44,8 +46,8 @@ export const createProfileAction = async (prevState: any, formData: FormData) =>
   }
   redirect('/')
 };
-
 export const createPropertyAction = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prevState: any,
   formData: FormData
 ): Promise<{ message: string }> => {

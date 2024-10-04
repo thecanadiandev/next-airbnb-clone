@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
+
 const bucket = 'home-away'; // whatever we named in supabase storage for bucket
 
 // Create a single supabase client for interacting with your database
@@ -15,7 +16,7 @@ export const uploadImage = async (image: File) => {
 
   const { data } = await supabase.storage
     .from(bucket)
-    .upload(newName, image, {
+    .upload(newName, image as File, {
       cacheControl: '3600',
     });
   if (!data) throw new Error('Image upload failed');

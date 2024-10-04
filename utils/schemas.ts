@@ -1,6 +1,5 @@
 
 import * as z from 'zod';
-import { File } from 'node:buffer'
 
 export const profileSchema = z.object({
   firstName: z.string().min(2, { message: 'First name must be atleast 2 characters' }),
