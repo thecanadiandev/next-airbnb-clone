@@ -3,7 +3,7 @@ import db from './db';
 import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { profileSchema } from "./schemas";
+import { profileSchema, validateWithZodSchema } from "./schemas";
 
 const renderError = (error: unknown): { message: string } => {
   console.log(error);
@@ -21,7 +21,7 @@ export const createProfileAction = async (prevState: any, formData: FormData) =>
       throw new Error('Please login..')
     }
     const rawData = Object.fromEntries(formData);
-    const validatedFields = profileSchema.parse(rawData);
+    const validatedFields = validateWithZodSchema(profileSchema, rawData)
 
     // ADD A USER PROFILE ONTO SUPABASE DB 
     await db.profile.create({
@@ -87,7 +87,7 @@ export const updateProfileAction = async (
   const user = await getAuthUser();
   try {
     const rawData = Object.fromEntries(formData);
-    const validatedFields = profileSchema.parse(rawData);
+    const validatedFields = validateWithZodSchema(profileSchema, rawData)
 
     await db.profile.update({
       where: {
