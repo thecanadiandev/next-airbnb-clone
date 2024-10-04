@@ -3,7 +3,7 @@ import db from './db';
 import { clerkClient, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { imageSchema, profileSchema, validateWithZodSchema } from "./schemas";
+import { imageSchema, profileSchema, propertySchema, validateWithZodSchema } from "./schemas";
 import { uploadImage } from './supabase'
 
 const renderError = (error: unknown): { message: string } => {
@@ -43,6 +43,25 @@ export const createProfileAction = async (prevState: any, formData: FormData) =>
     return renderError(error)
   }
   redirect('/')
+};
+
+export const createPropertyAction = async (
+  prevState: any,
+  formData: FormData
+): Promise<{ message: string }> => {
+  const user = await getAuthUser();
+  console.log(user)
+  try {
+    const rawData = Object.fromEntries(formData);
+    const validatedFields = validateWithZodSchema(propertySchema, rawData);
+    console.log(validatedFields)
+    return {
+      message: 'Property created'
+    }
+  } catch (error) {
+    return renderError(error);
+  }
+  //redirect('/');
 };
 
 export const fetchProfileImage = async () => {
