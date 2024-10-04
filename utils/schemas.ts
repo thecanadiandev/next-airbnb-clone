@@ -1,4 +1,6 @@
+
 import * as z from 'zod';
+import { File } from 'node:buffer'
 
 export const profileSchema = z.object({
   firstName: z.string().min(2, { message: 'First name must be atleast 2 characters' }),
@@ -17,4 +19,24 @@ export function validateWithZodSchema<T>(
     throw new Error(errors.join(', '));
   }
   return result.data;
+}
+
+export const imageSchema = z.object({
+  image: validateFile(),
+});
+
+function validateFile() {
+  // 1MB 
+  const maxUploadSize = 1024 * 1024;
+  const acceptedFileTypes = ['image/'];
+  return z
+    .instanceof(File)
+    .refine((file) => {
+      return !file || file.size <= maxUploadSize;
+    }, `File size must be less than 1 MB`)
+    .refine((file) => {
+      return (
+        !file || acceptedFileTypes.some((type) => file.type.startsWith(type))
+      );
+    }, 'File must be an image');
 }

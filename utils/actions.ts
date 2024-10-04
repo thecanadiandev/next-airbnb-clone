@@ -1,9 +1,10 @@
 'use server'
 import db from './db';
-import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
+import { clerkClient, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { profileSchema, validateWithZodSchema } from "./schemas";
+import { imageSchema, profileSchema, validateWithZodSchema } from "./schemas";
+import { uploadImage } from './supabase'
 
 const renderError = (error: unknown): { message: string } => {
   console.log(error);
@@ -81,6 +82,7 @@ export const fetchProfile = async () => {
 };
 
 export const updateProfileAction = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prevState: any,
   formData: FormData
 ): Promise<{ message: string }> => {
@@ -103,8 +105,27 @@ export const updateProfileAction = async (
 };
 
 export const updateProfileImageAction = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prevState: any,
   formData: FormData
 ): Promise<{ message: string }> => {
-  return { message: 'Profile image updated successfully' };
+  const user = await getAuthUser();
+  try {
+    const image = formData.get('image') as File;
+    const validatedFields = validateWithZodSchema(imageSchema, { image });
+    const fullPath = await uploadImage(validatedFields.image);
+    await db.profile.update({
+      where: {
+        clerkId: user.id
+      },
+      data: {
+        profileImage: fullPath
+      }
+    })
+    revalidatePath('/profile')
+
+    return { message: 'Profile image updated successfully' };
+  } catch (error) {
+    return renderError(error);
+  }
 };
