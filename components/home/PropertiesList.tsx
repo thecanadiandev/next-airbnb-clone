@@ -8,9 +8,9 @@ const PropertiesList = ({
   properties: PropertyCardProps[];
 }) => {
   return (
-    <section>
+    <section className="mt-4 gap-8 grid sm:grid-cols-2  lg:grid-cols-3  xl:grid-cols-4">
       {properties.map((property) => (
-        <PropertyCard key={property.id} />
+        <PropertyCard property={property} key={property.id} />
       ))}
     </section>
   );
