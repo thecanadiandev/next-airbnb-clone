@@ -1,4 +1,5 @@
 import CategoriesList from '@/components/home/CategoriesList';
+import PropertiesContainer from '@/components/home/PropertiesContainer';
 
 function HomePage({
   searchParams,
@@ -13,6 +14,7 @@ function HomePage({
         category={searchParams?.category}
         search={searchParams?.search}
       />
+      <PropertiesContainer />
     </section>
   );
 }
