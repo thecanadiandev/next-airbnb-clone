@@ -1,14 +1,17 @@
 import { fetchProfileImage } from '@/utils/actions';
 import { LuUser2 } from 'react-icons/lu';
+import Image from 'next/image';
 
 async function UserIcon() {
   const profileImage = await fetchProfileImage();
   if (profileImage) {
     return (
-      <img
+      <Image
         src={profileImage}
         alt="profile image"
         className="w-6 h-6 rounded-full object-cover"
+        width={100}
+        height={100}
       />
     );
   }
