@@ -3,7 +3,7 @@ import db from './db';
 import { clerkClient, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { imageSchema, profileSchema, propertySchema, validateWithZodSchema } from "./schemas";
+import { createReviewSchema, imageSchema, profileSchema, propertySchema, validateWithZodSchema } from "./schemas";
 import { uploadImage } from './supabase'
 
 const renderError = (error: unknown): { message: string } => {
@@ -271,13 +271,47 @@ export const fetchPropertyDetails = (id: string) => {
 
 // **************** REVIEWS  *********************
 
-export const createReviewAction = async () => {
-  return { message: 'create review' };
-};
+export async function createReviewAction(prevState: any, formData: FormData) {
+  const user = await getAuthUser();
+  try {
+    const rawData = Object.fromEntries(formData);
 
-export const fetchPropertyReviews = async () => {
-  return { message: 'fetch reviews' };
-};
+    const validatedFields = validateWithZodSchema(createReviewSchema, rawData);
+    await db.review.create({
+      data: {
+        ...validatedFields,
+        profileId: user.id,
+      },
+    });
+    revalidatePath(`/properties/${validatedFields.propertyId}`);
+    return { message: 'Review submitted successfully' };
+  } catch (error) {
+    return renderError(error);
+  }
+}
+
+export async function fetchPropertyReviews(propertyId: string) {
+  const reviews = await db.review.findMany({
+    where: {
+      propertyId,
+    },
+    select: {
+      id: true,
+      rating: true,
+      comment: true,
+      profile: {
+        select: {
+          firstName: true,
+          profileImage: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+  return reviews;
+}
 
 export const fetchPropertyReviewsByUser = async () => {
   return { message: 'fetch user reviews' };
@@ -286,3 +320,4 @@ export const fetchPropertyReviewsByUser = async () => {
 export const deleteReviewAction = async () => {
   return { message: 'delete  reviews' };
 };
+
