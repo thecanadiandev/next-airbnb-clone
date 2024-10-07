@@ -4,7 +4,7 @@ import { type NextRequest, type NextResponse } from 'next/server';
 import db from '@/utils/db';
 import { formatDate } from '@/utils/format';
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
+export const POST = async (req: NextRequest, _res: NextResponse) => {
   const requestHeaders = new Headers(req.headers);
   const origin = requestHeaders.get('origin');
 
