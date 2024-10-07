@@ -1,7 +1,6 @@
 import FavoriteToggleButton from '@/components/card/FavoriteToggleButton';
 import PropertyRating from '@/components/card/PropertyRating';
 import Amenities from '@/components/properties/Amenities';
-import BookingCalendar from '@/components/properties/booking/BookingCalendar';
 import BreadCrumbs from '@/components/properties/Breadcrumbs';
 import Description from '@/components/properties/Description';
 import ImageContainer from '@/components/properties/ImageContainer';
@@ -68,7 +67,6 @@ async function PropertyDetailsPage({ params }: { params: { id: string } }) {
         </div>
         <div className="lg:col-span-4 flex flex-col items-center">
           {/* calendar */}
-          <BookingCalendar />
         </div>
       </section>
       {reviewDoesNotExist && <SubmitReview propertyId={property.id} />}
